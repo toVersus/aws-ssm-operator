@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: aws-ssm-operator
+  labels:
+    app: aws-ssm-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      name: aws-ssm-operator
+  template:
+    metadata:
+      labels:
+        name: aws-ssm-operator
+    spec:
+      serviceAccountName: aws-ssm-operator
+      containers:
+        - name: aws-ssm-operator
+          # Replace this with the built image name
+          image: toversus/aws-ssm-operator:v0.0.1
+          ports:
+            - containerPort: 60000
+              name: metrics
+          command:
+            - aws-ssm-operator
+          imagePullPolicy: Always
+          readinessProbe:
+            exec:
+              command:
+                - stat
+                - /tmp/operator-sdk-ready
+            initialDelaySeconds: 4
+            periodSeconds: 5
+            failureThreshold: 1
+          env:
+            - name: WATCH_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: OPERATOR_NAME
+              value: "aws-ssm-operator"
+            - name: AWS_REGION
+              value: "ap-northeast-1"

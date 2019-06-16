@@ -1,0 +1,17 @@
+apiVersion: ssm.aws/v1alpha1
+kind: ParameterStore
+metadata:
+  name: dbuser
+spec:
+  valueFrom:
+    parameterStoreRef:
+      name: /aurora/mysql/stg/dbuser
+---
+apiVersion: ssm.aws/v1alpha1
+kind: ParameterStore
+metadata:
+  name: dbpassword
+spec:
+  valueFrom:
+    parameterStoreRef:
+      name: /aurora/mysql/stg/dbpassword
