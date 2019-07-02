@@ -55,6 +55,86 @@ Create an sample Paramter Store resource::
 $ kubectl create -f deploy/crds/ssm_v1alpha1_parameterstore_cr.yaml
 ```
 
+## Verifing
+
+You can find your credentials in separate Secret resources as follows. The key to secret data is 'name' which is hardcoded and cannot be changed.
+
+```bash
+$ kubectl describe secret dbpassword
+Name:         dbpassword
+Namespace:    default
+Labels:       app=dbpassword
+Annotations:  <none>
+
+Type:  Opaque
+
+Data
+====
+name:  9 bytes
+
+$ kubectl describe secret dbuser
+Name:         dbuser
+Namespace:    default
+Labels:       app=dbuser
+Annotations:  <none>
+
+Type:  Opaque
+
+Data
+====
+name:  7 bytes
+```
+
+You can reference secret data in your Pod declaration as follows:
+
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sample-app-pod
+spec:
+  containers:
+  - name: sample-app
+    image: toversus/sample-app
+    env:
+      - name: DB_USER
+        valueFrom:
+          secretKeyRef:
+            name: dbuser
+            key: name
+      - name: DB_PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: dbpassword
+            key: name
+  restartPolicy: Never
+```
+
+In Knative Service resource, you can define them in containers spec:
+
+```yaml
+   apiVersion: serving.knative.dev/v1alpha1
+   kind: Service
+   metadata:
+     name: sample-app
+   spec:
+     template:
+       spec:
+         containers:
+           - image: toversus/sample-app
+             env:
+               - name: DB_USER
+                 valueFrom:
+                   secretKeyRef:
+                     name: dbuser
+                     key: name
+               - name: DB_PASSWORD
+                 valueFrom:
+                   secretKeyRef:
+                     name: dbpassword
+                     key: name
+```
+
 ## Clean up
 
 To clean up all the components:
