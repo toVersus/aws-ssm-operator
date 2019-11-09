@@ -1,0 +1,18 @@
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: aws-ssm-operator
+  namespace: kube-system
+  labels:
+      ssm.aws/release: v0.1.0
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "namespaces", "secrets", "configmaps", "events", "serviceaccounts"]
+    verbs: ["get", "list", "create", "update", "delete", "patch", "watch"]
+  - apiGroups: ["apps"]
+    resourceNames: ["aws-ssm-operator"]
+    resources: ["deployments/finalizers"]
+    verbs: ["update"]
+  - apiGroups: ["ssm.aws"]
+    resources: ["*"]
+    verbs: ["*"]

@@ -31,19 +31,10 @@ In case of using EKS Cluster as your Kubernetes platform, attach `AmazonSSMReadO
 
 ```bash
 # Setup Service Account
-kubectl create -f deploy/service_account.yaml
-
-# Setup RBAC (Namespaced, more secure)
-kubectl create -f deploy/role.yaml -f deploy/role_binding.yaml
-
-# Deploy the CRD
-kubectl create -f deploy/crds/ssm_v1alpha1_parameterstore_crd.yaml
-
-# Deploy the aws-ssm-operator
-kubectl create -f deploy/operator.yaml
+kubectl apply -f deploy/
 
 # Verify that a Pod is running
-kubectl get pod -l app=aws-secret-operator --watch
+kubectl get pod -l app=aws-ssm-operator --watch -n kube-system
 ```
 
 ## Usage
@@ -52,10 +43,10 @@ Create an sample Paramter Store resource::
 
 ```bash
 # Create an example Parameter Store resource
-$ kubectl create -f deploy/crds/ssm_v1alpha1_parameterstore_cr.yaml
+$ kubectl create -f example/database.yaml
 ```
 
-## Verifing
+## Verifying
 
 You can find your credentials in separate Secret resources as follows. The key to secret data is 'name' which is hardcoded and cannot be changed.
 

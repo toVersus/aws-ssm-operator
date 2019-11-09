@@ -106,7 +106,7 @@ func (r *ReconcileParameterStore) Reconcile(request reconcile.Request) (reconcil
 		return reconcile.Result{}, err
 	}
 
-	// Check if this Pod already exists
+	// Check if this Secret already exists
 	current := &corev1.Secret{}
 	err = r.client.Get(context.TODO(), types.NamespacedName{Name: desired.Name, Namespace: desired.Namespace}, current)
 	if err != nil && errors.IsNotFound(err) {
@@ -116,13 +116,13 @@ func (r *ReconcileParameterStore) Reconcile(request reconcile.Request) (reconcil
 			return reconcile.Result{}, err
 		}
 
-		// Pod created successfully - don't requeue
+		// Secret created successfully - don't requeue
 		return reconcile.Result{}, nil
 	} else if err != nil {
 		return reconcile.Result{}, err
 	}
 
-	// Pod already exists - don't requeue
+	// Secret already exists - don't requeue
 	reqLogger.Info("Skip reconcile: Secret already exists", "current.Namespace", current.Namespace, "current.Name", current.Name)
 	return reconcile.Result{}, nil
 }

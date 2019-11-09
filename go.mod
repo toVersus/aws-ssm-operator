@@ -4,14 +4,13 @@ require (
 	contrib.go.opencensus.io/exporter/ocagent v0.4.9 // indirect
 	github.com/Azure/go-autorest v11.5.2+incompatible // indirect
 	github.com/appscode/jsonpatch v0.0.0-20190108182946-7c0e3b262f30 // indirect
-	github.com/aws/aws-sdk-go v1.20.1
+	github.com/aws/aws-sdk-go v1.25.29
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/emicklei/go-restful v2.8.1+incompatible // indirect
 	github.com/go-logr/logr v0.1.0 // indirect
 	github.com/go-logr/zapr v0.1.0 // indirect
 	github.com/go-openapi/spec v0.18.0
 	github.com/golang/groupcache v0.0.0-20180924190550-6f2cf27854a4 // indirect
-	github.com/golang/mock v1.2.0 // indirect
 	github.com/google/btree v0.0.0-20180813153112-4030bb1f1f0c // indirect
 	github.com/google/uuid v1.0.0 // indirect
 	github.com/googleapis/gnostic v0.2.0 // indirect
@@ -56,3 +55,5 @@ replace (
 	sigs.k8s.io/controller-runtime => sigs.k8s.io/controller-runtime v0.1.10
 	sigs.k8s.io/controller-tools => sigs.k8s.io/controller-tools v0.1.11-0.20190411181648-9d55346c2bde
 )
+
+go 1.13

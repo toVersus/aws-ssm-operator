@@ -2,8 +2,10 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: aws-ssm-operator
+  namespace: kube-system
   labels:
     app: aws-ssm-operator
+    ssm.aws/release: v0.1.0
 spec:
   replicas: 1
   selector:
@@ -17,8 +19,7 @@ spec:
       serviceAccountName: aws-ssm-operator
       containers:
         - name: aws-ssm-operator
-          # Replace this with the built image name
-          image: toversus/aws-ssm-operator:v0.0.1
+          image: toversus/aws-ssm-operator:v0.1.0
           ports:
             - containerPort: 60000
               name: metrics
