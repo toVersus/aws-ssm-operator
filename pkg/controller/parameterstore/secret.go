@@ -1,6 +1,8 @@
 package parameterstore
 
 import (
+	"strings"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ssm"
@@ -21,7 +23,7 @@ func newSSMClient(s *session.Session) *SSMClient {
 }
 
 // FetchParameterStoreValue fetches decrypted value from SSM Parameter Store
-func (c *SSMClient) FetchParameterStoreValue(name string) (*string, error) {
+func (c *SSMClient) FetchParameterStoreValues(ref v1alpha1.ParameterStoreRef) (map[string]string, error) {
 	if c.s == nil {
 		c.s = session.Must(session.NewSession())
 	}
@@ -30,29 +32,46 @@ func (c *SSMClient) FetchParameterStoreValue(name string) (*string, error) {
 		c.ssm = ssm.New(c.s)
 	}
 
-	got, err := c.ssm.GetParameter(&ssm.GetParameterInput{
-		Name:           aws.String(name),
+	if ref.Name != "" {
+		log.Info("fetching values from SSM Parameter Store by name: %s", ref.Name)
+		got, err := c.ssm.GetParameter(&ssm.GetParameterInput{
+			Name:           aws.String(ref.Name),
+			WithDecryption: aws.Bool(true),
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		return map[string]string{"name": aws.StringValue(got.Parameter.Value)}, nil
+	}
+
+	log.Info("fetching values from SSM Parameter Store by path: %s", ref.Path)
+	got, err := c.ssm.GetParametersByPath(&ssm.GetParametersByPathInput{
+		Path:           aws.String(ref.Path),
 		WithDecryption: aws.Bool(true),
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	return got.Parameter.Value, nil
+	dict := make(map[string]string, len(got.Parameters))
+	for _, p := range got.Parameters {
+		ss := strings.Split(aws.StringValue(p.Name), "/")
+		dict[ss[len(ss)-1]] = aws.StringValue(p.Value)
+	}
+
+	return dict, nil
 }
 
-// SSMParameterValueToSecret shapes fetched value so as to store it into K8S Secret
+// SSMParameterValueToSecret shapes fetched value so as to store them into K8S Secret
 func (c *SSMClient) SSMParameterValueToSecret(ref v1alpha1.ParameterStoreRef) (map[string]string, error) {
-	log.Info("fetching value from SSM Parameter Store")
-	val, err := c.FetchParameterStoreValue(ref.Name)
+	params, err := c.FetchParameterStoreValues(ref)
 	if err != nil {
 		return nil, err
 	}
-	if val == nil {
+	if params == nil {
 		return nil, errs.New("fetched value must not be nil")
 	}
 
-	return map[string]string{
-		"name": *val,
-	}, nil
+	return params, nil
 }

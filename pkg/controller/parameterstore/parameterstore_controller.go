@@ -2,10 +2,8 @@ package parameterstore
 
 import (
 	"context"
-	"fmt"
 
 	errs "github.com/pkg/errors"
-	ssmv1alpha1 "github.com/toVersus/aws-ssm-operator/pkg/apis/ssm/v1alpha1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -19,6 +17,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	logf "sigs.k8s.io/controller-runtime/pkg/runtime/log"
 	"sigs.k8s.io/controller-runtime/pkg/source"
+
+	ssmv1alpha1 "github.com/toVersus/aws-ssm-operator/pkg/apis/ssm/v1alpha1"
 )
 
 var log = logf.Log.WithName("parameterstore-controller")
@@ -136,12 +136,10 @@ func (r *ReconcileParameterStore) newSecretForCR(cr *ssmv1alpha1.ParameterStore)
 		r.ssmc = newSSMClient(nil)
 	}
 	ref := cr.Spec.ValueFrom.ParameterStoreRef
-	log.Info(fmt.Sprintf("parameterstore name: %s", ref.Name))
 	data, err := r.ssmc.SSMParameterValueToSecret(ref)
 	if err != nil {
 		return nil, errs.Wrap(err, "failed to get json secret as map")
 	}
-
 	return &corev1.Secret{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      cr.Name,
