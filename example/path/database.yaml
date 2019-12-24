@@ -5,4 +5,4 @@ metadata:
 spec:
   valueFrom:
     parameterStoreRef:
-      path: /aurora/mysql/stg
+      path: /stg/foo-app
