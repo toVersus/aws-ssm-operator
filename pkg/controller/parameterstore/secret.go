@@ -22,7 +22,7 @@ func newSSMClient(s *session.Session) *SSMClient {
 	}
 }
 
-// FetchParameterStoreValue fetches decrypted value from SSM Parameter Store
+// FetchParameterStoreValue fetches decrypted values from SSM Parameter Store
 func (c *SSMClient) FetchParameterStoreValues(ref v1alpha1.ParameterStoreRef) (map[string]string, error) {
 	if c.s == nil {
 		c.s = session.Must(session.NewSession())

@@ -5,4 +5,4 @@ metadata:
 spec:
   valueFrom:
     parameterStoreRef:
-      path: /stg/foo-app
+      path: /stg/foo-app/

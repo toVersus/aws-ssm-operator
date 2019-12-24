@@ -119,6 +119,8 @@ func (r *ReconcileParameterStore) Reconcile(request reconcile.Request) (reconcil
 		// Secret created successfully - don't requeue
 		return reconcile.Result{}, nil
 	} else if err != nil {
+		reqLogger.Info("Updating an existing Secret", "desired.Namespace", desired.Namespace, "desired.Name", desired.Name)
+		err = r.client.Update(context.TODO(), desired)
 		return reconcile.Result{}, err
 	}
 
