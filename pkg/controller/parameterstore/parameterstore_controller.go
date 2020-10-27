@@ -110,9 +110,9 @@ func (r *ReconcileParameterStore) Reconcile(request reconcile.Request) (reconcil
 	current := &corev1.Secret{}
 	err = r.client.Get(context.TODO(), types.NamespacedName{Name: desired.Name, Namespace: desired.Namespace}, current)
     if err != nil {
-		if errors.IsNotFound(err) {
-			reqLogger.Info("Creating a new Secret", "desired.Namespace", desired.Namespace, "desired.Name", desired.Name)
-			err = r.client.Create(context.TODO(), desired)
+        if errors.IsNotFound(err) {
+            reqLogger.Info("Creating a new Secret", "desired.Namespace", desired.Namespace, "desired.Name", desired.Name)
+            err = r.client.Create(context.TODO(), desired)
         }
     } else {
         reqLogger.Info("Updating an existing Secret", "desired.Namespace", desired.Namespace, "desired.Name", desired.Name)
