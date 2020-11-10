@@ -109,24 +109,17 @@ func (r *ReconcileParameterStore) Reconcile(request reconcile.Request) (reconcil
 	// Check if this Secret already exists
 	current := &corev1.Secret{}
 	err = r.client.Get(context.TODO(), types.NamespacedName{Name: desired.Name, Namespace: desired.Namespace}, current)
-	if err != nil && errors.IsNotFound(err) {
-		reqLogger.Info("Creating a new Secret", "desired.Namespace", desired.Namespace, "desired.Name", desired.Name)
-		err = r.client.Create(context.TODO(), desired)
-		if err != nil {
-			return reconcile.Result{}, err
-		}
+    if err != nil {
+        if errors.IsNotFound(err) {
+            reqLogger.Info("Creating a new Secret", "desired.Namespace", desired.Namespace, "desired.Name", desired.Name)
+            err = r.client.Create(context.TODO(), desired)
+        }
+    } else {
+        reqLogger.Info("Updating an existing Secret", "desired.Namespace", desired.Namespace, "desired.Name", desired.Name)
+        err = r.client.Update(context.TODO(), desired)
+    }
 
-		// Secret created successfully - don't requeue
-		return reconcile.Result{}, nil
-	} else if err != nil {
-		reqLogger.Info("Updating an existing Secret", "desired.Namespace", desired.Namespace, "desired.Name", desired.Name)
-		err = r.client.Update(context.TODO(), desired)
-		return reconcile.Result{}, err
-	}
-
-	// Secret already exists - don't requeue
-	reqLogger.Info("Skip reconcile: Secret already exists", "current.Namespace", current.Namespace, "current.Name", current.Name)
-	return reconcile.Result{}, nil
+	return reconcile.Result{}, err
 }
 
 // newSecretForCR returns a Secret with the same name/namespace as the cr
