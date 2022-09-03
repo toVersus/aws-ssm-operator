@@ -1,5 +1,7 @@
 # aws-ssm-operator
 
+> **Note:** aws-ssm-operator is deprecated. Please consider to use alternative solutions like [external-secrets.io](https://external-secrets.io/v0.5.9/).
+
 A Kubernetes operator that automatically maps what are stored in AWS SSM Parameter Store into Kubernetes Secrets.
 
 `aws-ssm-operator` Custom Resources defines desired state of Kubernetes Secret fetched from SSM Parameter Store. Otherwise, `parameterstore-controller` controller monitors user's request and cached parameter values or credentials as plaintext into Kubernetes Secret.
